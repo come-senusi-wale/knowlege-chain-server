@@ -1,0 +1,202 @@
+import { validationResult } from "express-validator";
+import { Request, Response } from "express";
+import UserModel from "../../database/models/user.model";
+import TransactionModel from "../../database/models/transaction.model";
+import UserTestModel from "../../database/models/userTest.model";
+import { PaystackService } from "../../utils/paystack/paystack.payment";
+import { TransactionStatus } from "../../database/interface/transaction.interface";
+
+
+export const userInitNairaPaymentController = async (
+    req: Request,
+    res: Response,
+  ) => {
+  
+    try {
+      const {
+        walletAddress,
+        callback
+      } = req.body;
+  
+      const user = await UserModel.findOne({ walletAddress: walletAddress });
+
+      if (!user) {
+        return res
+          .status(401)
+          .json({ message: "please connect your wallet" });
+      }
+
+      if (!user.email || user.email == null || user.email == '') {
+        return res
+          .status(401)
+          .json({ message: "please verify your profile" });
+      }
+
+      if (user.paid) {
+        return res
+          .status(401)
+          .json({ message: "You have paid Already" });
+      }
+
+      const paystackService = new PaystackService();
+
+      const callbackUrl = callback
+      const amount = 2000;
+
+      const initPayment = await paystackService.initTransaction(user.email, amount, user._id, callbackUrl)
+
+      if (!initPayment.status) {
+        return res
+          .status(401)
+          .json({ message: initPayment.message });
+      }
+
+      const transaction = new TransactionModel({
+        user: user._id,
+        amount: amount,
+        status: TransactionStatus.Pending,
+        reference: initPayment.data.reference
+      });
+
+      await transaction.save()
+
+      return res.status(200).json({ data: initPayment});
+      
+    } catch (err: any) {
+      // signup error
+      res.status(500).json({ message: err.message });
+    }
+  
+  }
+
+
+  export const userVerifyNairaPaymentController = async (
+    req: Request,
+    res: Response,
+  ) => {
+  
+    try {
+      const {
+        walletAddress,
+        reference
+      } = req.body;
+  
+      const user = await UserModel.findOne({ walletAddress: walletAddress });
+
+      if (!user) {
+        return res
+          .status(401)
+          .json({ message: "please connect your wallet" });
+      }
+
+      if (!user.email || user.email == null || user.email == '') {
+        return res
+          .status(401)
+          .json({ message: "please verify your profile" });
+      }
+
+      if (!user.emailOtp.verified) {
+        return res
+          .status(401)
+          .json({ message: "please verify your profile" });
+      }
+
+      const checkTransaction = await TransactionModel.findOne({ user: user._id, reference: reference });
+      if (!checkTransaction) {
+        return res
+          .status(401)
+          .json({ message: "Transaction not found" });
+      }
+
+      if (checkTransaction.status != TransactionStatus.Pending) {
+        return res
+          .status(401)
+          .json({ message: "Transaction already verified or failed" });
+      }
+
+      const paystackService = new PaystackService();
+
+      const verifyPayment = await paystackService.verifyTransaction(reference)
+
+      if (!verifyPayment.status) {
+        return res
+          .status(401)
+          .json({ message: verifyPayment.message });
+      }
+
+      const updatedTransaction = await TransactionModel.findOneAndUpdate(
+        {user: user._id, reference: reference}, 
+        {status: TransactionStatus.Completed},
+        {new: true}
+      )
+
+     await UserModel.findOneAndUpdate(
+        {_id: user._id}, 
+        {paid: true},
+        {new: true}
+      )
+
+      return res.status(200).json({ data: updatedTransaction});
+      
+    } catch (err: any) {
+      // signup error
+      res.status(500).json({ message: err.message });
+    }
+  
+  }
+
+
+  export const userChangePaymentStatusController = async (
+    req: Request,
+    res: Response,
+  ) => {
+  
+    try {
+      const {
+        walletAddress,
+      } = req.body;
+  
+      const user = await UserModel.findOne({ walletAddress: walletAddress });
+
+      if (!user) {
+        return res
+          .status(401)
+          .json({ message: "please connect your wallet" });
+      }
+
+      if (!user.email || user.email == null || user.email == '') {
+        return res
+          .status(401)
+          .json({ message: "please verify your profile" });
+      }
+
+      if (!user.emailOtp.verified) {
+        return res
+          .status(401)
+          .json({ message: "please verify your profile" });
+      }
+
+      if (user.paid) {
+        return res
+          .status(401)
+          .json({ message: "You have paid Already" });
+      }
+
+
+
+     await UserModel.findOneAndUpdate(
+        {_id: user._id, paid: false}, 
+        {paid: true},
+        {new: true}
+      )
+
+      return res.status(200).json({ data: {
+        message: "payment status change completely"
+      }});
+      
+    } catch (err: any) {
+      // signup error
+      res.status(500).json({ message: err.message });
+    }
+  
+  }
