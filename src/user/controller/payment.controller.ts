@@ -5,6 +5,7 @@ import TransactionModel from "../../database/models/transaction.model";
 import UserTestModel from "../../database/models/userTest.model";
 import { PaystackService } from "../../utils/paystack/paystack.payment";
 import { TransactionStatus } from "../../database/interface/transaction.interface";
+import { mint } from "../../BlockChain/mint";
 
 
 export const userInitNairaPaymentController = async (
@@ -32,11 +33,11 @@ export const userInitNairaPaymentController = async (
           .json({ message: "please verify your profile" });
       }
 
-      if (user.paid) {
-        return res
-          .status(401)
-          .json({ message: "You have paid Already" });
-      }
+      // if (user.paid) {
+      //   return res
+      //     .status(401)
+      //     .json({ message: "You have paid Already" });
+      // }
 
       const paystackService = new PaystackService();
 
@@ -122,6 +123,13 @@ export const userInitNairaPaymentController = async (
         return res
           .status(401)
           .json({ message: verifyPayment.message });
+      }
+
+      const mintNft = await mint(walletAddress)
+      if (!mintNft.status) {
+        return res
+          .status(401)
+          .json({ message: mintNft.message });
       }
 
       const updatedTransaction = await TransactionModel.findOneAndUpdate(
