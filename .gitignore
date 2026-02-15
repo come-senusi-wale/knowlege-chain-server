@@ -3,6 +3,7 @@ npm-debug.log
 .DS_Store
 .env
 .evm.example
+google-sheet-credential.json
 
 
 # /dist
