@@ -1,7 +1,7 @@
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import nodemailer from "nodemailer";
-import { accountVerifyTemplate } from "../templates/emailVerification.template";
-import { SendEmailType } from "../types/email.type";
+import { accountVerifyTemplate, messageTemplate } from "../templates/emailVerification.template";
+import { SendEmailType, SendUserEmailType } from "../types/email.type";
 
 
 let transporter: any;
@@ -35,7 +35,7 @@ export const sendUserAccountVerificationEmail = async ({
   
     try {
       let response = await transporter.sendMail({
-        from: "Theraswift",
+        from: "Knowledge Chain",
         to: emailTo,
         subject: subject,
         html: accountVerifyTemplate(otp, firstName!),
@@ -44,6 +44,29 @@ export const sendUserAccountVerificationEmail = async ({
     } catch (error) {
       throw error;
     }
-  };
+};
+
+
+export const sendUserMessageEmail = async ({
+    emailTo,
+    subject,
+    message,
+    firstName,
+  }: SendUserEmailType) => {
+    // Init the nodemailer transporter
+    transporterInit();
+  
+    try {
+      let response = await transporter.sendMail({
+        from: "Knowledge Chain",
+        to: emailTo,
+        subject: subject,
+        html: messageTemplate(message, firstName!),
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+};
 
 

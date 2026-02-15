@@ -6,6 +6,8 @@ import UserTestModel from "../../database/models/userTest.model";
 import { PaystackService } from "../../utils/paystack/paystack.payment";
 import { TransactionStatus } from "../../database/interface/transaction.interface";
 import { mint } from "../../BlockChain/mint";
+import axios from 'axios'
+import FormData from 'form-data'
 
 
 export const userInitNairaPaymentController = async (
@@ -68,7 +70,7 @@ export const userInitNairaPaymentController = async (
       res.status(500).json({ message: err.message });
     }
   
-  }
+}
 
 
   export const userVerifyNairaPaymentController = async (
@@ -79,7 +81,8 @@ export const userInitNairaPaymentController = async (
     try {
       const {
         walletAddress,
-        reference
+        reference,
+        img
       } = req.body;
   
       const user = await UserModel.findOne({ walletAddress: walletAddress });
@@ -125,7 +128,7 @@ export const userInitNairaPaymentController = async (
           .json({ message: verifyPayment.message });
       }
 
-      const mintNft = await mint(walletAddress)
+      const mintNft = await mint(walletAddress, img)
       if (!mintNft.status) {
         return res
           .status(401)
@@ -208,3 +211,40 @@ export const userInitNairaPaymentController = async (
     }
   
   }
+
+
+
+export const uploadImageToIPFS = async (req: Request, res: Response) => {
+  try {
+    const file = req.file
+
+    if (!file) {
+      return res.status(400).json({ message: 'Image is required' })
+    }
+
+    const formData = new FormData()
+    formData.append('file', file.buffer, file.originalname)
+
+    const pinataRes = await axios.post(
+      'https://api.pinata.cloud/pinning/pinFileToIPFS',
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+          pinata_api_key: process.env.PINATA_API_KEY!,
+          pinata_secret_api_key: process.env.PINATA_API_SECRET!,
+        },
+      }
+    )
+
+    const cid = pinataRes.data.IpfsHash
+
+    res.json({
+      cid,
+      url: `https://ipfs.io/ipfs/${cid}`,
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'IPFS upload failed' })
+  }
+}

@@ -7,11 +7,11 @@ const provider = new ethers.JsonRpcProvider(process.env.PROVIDER_URL);
 const signer = new ethers.Wallet(process.env.ADMIN_WALLET_PRIVATEKEY!, provider);
 const contract = new ethers.Contract(process.env.NFT_TOKEN_CONTRACT_ADDRESS!, nftTokenAbi, provider) as any;
 
-export const mint = async (walletAddress: any) => {
+export const mint = async (walletAddress: any, img: any) => {
     try {
         console.log(1)
 
-        const tx = await contract.connect(signer).mintOption(walletAddress);
+        const tx = await contract.connect(signer).mintOption(walletAddress, img);
 
         console.log(2)
 

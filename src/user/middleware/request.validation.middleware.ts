@@ -41,6 +41,7 @@ export const validateInitPaymentParams = [
 export const validateVerifyPaymentParams = [
   body("walletAddress").notEmpty(),
   body("reference").notEmpty(),
+   body("img").notEmpty(),
 ];
 
 

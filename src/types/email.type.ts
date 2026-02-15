@@ -3,4 +3,11 @@ export type SendEmailType = {
     subject: string;
     otp: string;
     firstName?: string;
-  };
+};
+
+export type SendUserEmailType = {
+    emailTo: string;
+    subject: string;
+    message: string;
+    firstName?: string;
+};

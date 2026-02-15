@@ -20,9 +20,35 @@ export const validateAddTestParams = [
   body("spreadsheetUrl").isString(),
 ];
 
+export const validateMessageUserParams = [
+  body("userId").isString(),
+  body("message").isString(),
+  body("subject").isString(),
+];
+
+export const validateMessageUsersParams = [
+  body("message").isString(),
+  body("subject").isString(),
+];
+
+
+export const validateUserDetailParams = [
+  query("userId").isString(),
+];
+
+export const validateTestResultDetailParams = [
+  query("spreadsheetsId").isString(),
+];
+
+
+
 
 export const requestValidation = {
   validateFormData,
   validateSignInParams,
   validateAddTestParams,
+  validateMessageUserParams,
+  validateMessageUsersParams,
+  validateUserDetailParams,
+  validateTestResultDetailParams
 }
