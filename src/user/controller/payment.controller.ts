@@ -5,9 +5,29 @@ import TransactionModel from "../../database/models/transaction.model";
 import UserTestModel from "../../database/models/userTest.model";
 import { PaystackService } from "../../utils/paystack/paystack.payment";
 import { TransactionStatus } from "../../database/interface/transaction.interface";
+import AmountModel from "../../database/models/amount.model";
 import { mint } from "../../BlockChain/mint";
 import axios from 'axios'
 import FormData from 'form-data'
+
+export const userGetAmountController = async (
+    req: Request,
+    res: Response,
+  ) => {
+  
+  try {
+    const amount = await AmountModel.findOne()
+  
+    res.json({
+      amount,
+    });
+    
+  } catch (err: any) {
+    // signup error
+    res.status(500).json({ message: err.message });
+  }
+  
+}
 
 
 export const userInitNairaPaymentController = async (
@@ -41,10 +61,17 @@ export const userInitNairaPaymentController = async (
       //     .json({ message: "You have paid Already" });
       // }
 
+       const prince = await AmountModel.findOne()
+       if (!prince) {
+         return res
+          .status(401)
+          .json({ message: "Price not set" });
+       }
+
       const paystackService = new PaystackService();
 
       const callbackUrl = callback
-      const amount = 2000;
+      const amount = prince.amount;
 
       const initPayment = await paystackService.initTransaction(user.email, amount, user._id, callbackUrl)
 

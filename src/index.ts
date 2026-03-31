@@ -42,7 +42,8 @@ app.use(helmet());
 const allowedOrigins = [
   "http://localhost:3000", 
   "http://localhost:3001", 
-  "http://localhost:3002"
+  "http://localhost:3002",
+  "https://www.theknowledgechain.com"
 ];
 
 app.use(
@@ -104,3 +105,6 @@ const port = process.env.PORT || 8000;
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
+
+// https://www.youtube.com/watch?v=PFJNJQCU_lo&t=780s   link for how to set goodle credential

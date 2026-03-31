@@ -40,6 +40,10 @@ export const validateTestResultDetailParams = [
   query("spreadsheetsId").isString(),
 ];
 
+export const validatChangeAmountParams = [
+  body("amount").notEmpty().isNumeric(),
+];
+
 
 
 
@@ -50,5 +54,6 @@ export const requestValidation = {
   validateMessageUserParams,
   validateMessageUsersParams,
   validateUserDetailParams,
-  validateTestResultDetailParams
+  validateTestResultDetailParams,
+  validatChangeAmountParams
 }

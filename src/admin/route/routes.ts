@@ -9,6 +9,7 @@ import { adminAddTestController, getAllTestController, getTestResultControllerTr
 import { requestValidation } from "./../middleware/request.validation.middleware";
 import { checkAdminRole } from "../middleware/role.checker.middleware";
 import { getAllUserController, getAllUserNotPaidController, getSingleUserController, messageAllUsersController, messageSingleUserController } from '../controller/user.controller';
+import { changeAmountController, getAmountController } from '../controller/amount.controller';
 
 router.post("/registration", requestValidation.validateSignInParams, requestValidation.validateFormData, adminSignUpController ); 
 router.post("/login", requestValidation.validateSignInParams, requestValidation.validateFormData, adminSignInController );
@@ -22,6 +23,9 @@ router.get("/user", checkAdminRole, requestValidation.validateUserDetailParams, 
 router.get("/users-not-paid", checkAdminRole,  getAllUserNotPaidController );
 router.post("/message-user", checkAdminRole, requestValidation.validateMessageUserParams, requestValidation.validateFormData, messageSingleUserController );
 router.post("/message-users", checkAdminRole, requestValidation.validateMessageUsersParams, requestValidation.validateFormData, messageAllUsersController );
+
+router.post("/change-amount", checkAdminRole, requestValidation.validatChangeAmountParams, requestValidation.validateFormData, changeAmountController );
+router.get("/amount", checkAdminRole, getAmountController );
 
 
 export default router;

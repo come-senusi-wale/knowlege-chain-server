@@ -16,6 +16,7 @@ import {
  import {  
      uploadImageToIPFS,
      userChangePaymentStatusController,
+    userGetAmountController,
     userInitNairaPaymentController,
     userVerifyNairaPaymentController
  } from "./../controller/payment.controller";
@@ -35,6 +36,8 @@ router.get("/check-test-link", requestValidation.validateCheckWalletParams, requ
 router.post("/init-payment", requestValidation.validateInitPaymentParams, requestValidation.validateFormData, userInitNairaPaymentController );
 router.post("/verify-payment", requestValidation.validateVerifyPaymentParams, requestValidation.validateFormData, userVerifyNairaPaymentController );
 router.post("/change-payment-status", requestValidation.validateCreateAccountParams, requestValidation.validateFormData, userChangePaymentStatusController );
+
+router.get("/amount", userGetAmountController );
 
 router.post("/upload-image",  singleFileUpload('media', ['image', 'video'], true), uploadImageToIPFS );
 
