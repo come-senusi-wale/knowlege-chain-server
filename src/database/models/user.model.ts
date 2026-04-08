@@ -1,16 +1,18 @@
 import { Schema, model } from "mongoose";
 import { IUser } from "../interface/user.interface";
 
-const UserSchema = new Schema(
+const UserSchema: Schema<IUser> = new Schema(
     { 
       walletAddress: {
         type: String,
+        unique: true,
+        required: true
       },
       name: {
         type: String,
       },
-      email: {
-        type: String,
+      userEmail: {
+        type: String, default: ""
       },
       phoneNumber: {
         type: String,

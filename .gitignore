@@ -4,6 +4,7 @@ npm-debug.log
 .env
 .evm.example
 google-sheet-credential.json
+tkc-sheet-credential.json
 
 
 # /dist

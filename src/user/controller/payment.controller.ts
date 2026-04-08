@@ -41,7 +41,7 @@ export const userInitNairaPaymentController = async (
         callback
       } = req.body;
   
-      const user = await UserModel.findOne({ walletAddress: walletAddress });
+      const user = await UserModel.findOne({ walletAddress: walletAddress.toString().toLowerCase() });
 
       if (!user) {
         return res
@@ -49,7 +49,7 @@ export const userInitNairaPaymentController = async (
           .json({ message: "please connect your wallet" });
       }
 
-      if (!user.email || user.email == null || user.email == '') {
+      if (!user.userEmail || user.userEmail == null || user.userEmail == '') {
         return res
           .status(401)
           .json({ message: "please verify your profile" });
@@ -73,7 +73,7 @@ export const userInitNairaPaymentController = async (
       const callbackUrl = callback
       const amount = prince.amount;
 
-      const initPayment = await paystackService.initTransaction(user.email, amount, user._id, callbackUrl)
+      const initPayment = await paystackService.initTransaction(user.userEmail, amount, user._id, callbackUrl)
 
       if (!initPayment.status) {
         return res
@@ -112,7 +112,7 @@ export const userInitNairaPaymentController = async (
         img
       } = req.body;
   
-      const user = await UserModel.findOne({ walletAddress: walletAddress });
+      const user = await UserModel.findOne({ walletAddress: walletAddress.toString().toLowerCase() });
 
       if (!user) {
         return res
@@ -120,7 +120,7 @@ export const userInitNairaPaymentController = async (
           .json({ message: "please connect your wallet" });
       }
 
-      if (!user.email || user.email == null || user.email == '') {
+      if (!user.userEmail || user.userEmail == null || user.userEmail == '') {
         return res
           .status(401)
           .json({ message: "please verify your profile" });
@@ -194,7 +194,7 @@ export const userInitNairaPaymentController = async (
         walletAddress,
       } = req.body;
   
-      const user = await UserModel.findOne({ walletAddress: walletAddress });
+      const user = await UserModel.findOne({ walletAddress: walletAddress.toString().toLowerCase() });
 
       if (!user) {
         return res
@@ -202,7 +202,7 @@ export const userInitNairaPaymentController = async (
           .json({ message: "please connect your wallet" });
       }
 
-      if (!user.email || user.email == null || user.email == '') {
+      if (!user.userEmail || user.userEmail == null || user.userEmail == '') {
         return res
           .status(401)
           .json({ message: "please verify your profile" });

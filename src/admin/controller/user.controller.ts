@@ -119,7 +119,7 @@ export const getSingleUserController = async (
     // 1️⃣ Get user
     const user = await UserModel.findById(userId);
 
-    if (!user || !user.email) {
+    if (!user || !user.userEmail) {
       return res.status(401).json({
         message: "User does not exist or has no email",
       });
@@ -177,7 +177,7 @@ export const getSingleUserController = async (
     const userRow = values.find(
       row =>
         row[emailColumnIndex]?.toLowerCase() ===
-        user.email!.toLowerCase()
+        user.userEmail!.toLowerCase()
     );
 
     if (!userRow) {
@@ -335,14 +335,14 @@ export const messageSingleUserController = async (
        .json({ message: "User do not exist" });
     }
 
-    if (!user.email || user.email == undefined) {
+    if (!user.userEmail || user.userEmail == undefined) {
       return res
        .status(401)
        .json({ message: "User Profile not verify" });
     }
 
     let emailData = {
-      emailTo: user.email,
+      emailTo: user.userEmail,
       subject: subject,
       message,
       firstName: user.name,
@@ -389,7 +389,7 @@ export const messageAllUsersController = async (
     for (const user of users) {
       try {
         const emailData = {
-          emailTo: user.email,
+          emailTo: user.userEmail,
           subject,
           message,
           firstName: user.name,
@@ -398,7 +398,7 @@ export const messageAllUsersController = async (
         await sendUserMessageEmail(emailData)
         sentCount++
       } catch (err) {
-        console.error(`Failed to send to ${user.email}`, err)
+        console.error(`Failed to send to ${user.userEmail}`, err)
         // continue sending to others
       }
     }

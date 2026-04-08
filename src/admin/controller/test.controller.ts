@@ -311,7 +311,7 @@ export const getTestResultControllerTwo = async (
     }).select("email");
 
     const userEmailSet = new Set(
-      users.map(u => u.email.toLowerCase())
+      users.map(u => u.userEmail.toLowerCase())
     );
 
     // ✅ Keep only sheet responses with email in DB
@@ -390,6 +390,8 @@ export const getTestResultControllerTre = async (
       range: "Form Responses 1",
     });
 
+    
+
     const rows = response.data.values as string[][] | undefined;
 
     if (!rows || rows.length <= 1) {
@@ -420,11 +422,12 @@ export const getTestResultControllerTre = async (
 
     // ✅ Fetch users with matching emails
     const users = await UserModel.find({
-      email: { $in: emailsFromSheet },
-    }).select("email");
+      userEmail : { $in: emailsFromSheet },
+    }).select("userEmail");
+
 
     const userEmailSet = new Set(
-      users.map(u => u.email.toLowerCase())
+      users.map(u => u.userEmail.toLowerCase())
     );
 
     // ✅ Filter sheet rows by DB users

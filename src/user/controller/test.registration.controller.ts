@@ -15,7 +15,7 @@ export const userRequestForTestQuestionController = async (
         walletAddress,
       } = req.body;
   
-      const user = await UserModel.findOne({ walletAddress: walletAddress });
+      const user = await UserModel.findOne({ walletAddress: walletAddress.toString().toLowerCase() });
 
       if (!user) {
         return res
@@ -23,7 +23,7 @@ export const userRequestForTestQuestionController = async (
           .json({ message: "please connect your wallet" });
       }
 
-      if (!user.email || user.email == null || user.email == '') {
+      if (!user.userEmail || user.userEmail == null || user.userEmail == '') {
         return res
           .status(401)
           .json({ message: "please verify your profile" });
@@ -73,7 +73,7 @@ export const userRequestForTestQuestionController = async (
         walletAddress,
       } = req.query;
   
-      const user = await UserModel.findOne({ walletAddress: walletAddress });
+      const user = await UserModel.findOne({ walletAddress: walletAddress!.toString().toLowerCase() });
 
       if (!user) {
         return res
@@ -81,7 +81,7 @@ export const userRequestForTestQuestionController = async (
           .json({ message: "please connect your wallet" });
       }
 
-      if (!user.email || user.email == null || user.email == '') {
+      if (!user.userEmail || user.userEmail == null || user.userEmail == '') {
         return res
           .status(401)
           .json({ message: "please verify your profile" });
@@ -121,7 +121,7 @@ export const userRequestForTestQuestionController = async (
         walletAddress,
       } = req.query;
   
-      const user = await UserModel.findOne({ walletAddress: walletAddress });
+      const user = await UserModel.findOne({ walletAddress: walletAddress!.toString().toLowerCase() });
 
       if (!user) {
         return res

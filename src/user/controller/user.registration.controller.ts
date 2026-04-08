@@ -15,21 +15,38 @@ export const userCreateAccountController = async (
       walletAddress,
     } = req.body;
 
-    const user = new UserModel({
-      walletAddress: walletAddress
-    });
+    const walletModify = walletAddress.toString().toLowerCase();
 
-    let userSaved = await user.save();
+    const checkWallet = await UserModel.findOne({walletAddress: walletModify})
+    if (checkWallet) {
+      res.json({
+        status: true,
+        message: "wallet address captured successfully",
+        user: {
+          id: checkWallet._id,
+          walletAddress: checkWallet.walletAddress,
+        },
 
-    res.json({
-      status: true,
-      message: "wallet address captured successfully",
-      user: {
-        id: userSaved._id,
-        walletAddress: userSaved.walletAddress,
-      },
+      });
+    }else{
+      const user = new UserModel({
+        walletAddress: walletModify
+      });
 
-    });
+      let userSaved = await user.save();
+
+      res.json({
+        status: true,
+        message: "wallet address captured successfully",
+        user: {
+          id: userSaved._id,
+          walletAddress: userSaved.walletAddress,
+        },
+
+      });
+    }
+
+    
     
   } catch (err: any) {
     // signup error
@@ -48,7 +65,7 @@ export const checkUserWalletAddressController = async (
       walletAddress,
     } = req.query;
   
-    const userWalletExists = await UserModel.findOne({ walletAddress: walletAddress });
+    const userWalletExists = await UserModel.findOne({ walletAddress: walletAddress!.toString().toLowerCase() });
   
     if (userWalletExists) {
       res.json({
@@ -89,7 +106,7 @@ export const userProvideEmailController = async (
       phoneNumber
     } = req.body;
   
-    const userWalletExists = await UserModel.findOne({ walletAddress: walletAddress });
+    const userWalletExists = await UserModel.findOne({ walletAddress: walletAddress.toString().toLowerCase() });
   
     if (!userWalletExists) {
       return res
@@ -97,7 +114,7 @@ export const userProvideEmailController = async (
         .json({ message: "please connect your wallet and buy a token" });
     }
 
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ userEmail: email });
 
     if (user) {
       if (user.emailOtp.verified) {
@@ -134,7 +151,7 @@ export const userProvideEmailController = async (
     const createdTime = new Date();
 
     userWalletExists.name = name
-    userWalletExists.email = email
+    userWalletExists.userEmail = email
     userWalletExists.phoneNumber = phoneNumber
 
     userWalletExists!.emailOtp = {
@@ -174,7 +191,7 @@ export const userVerifyEmailController = async (
       otp
     } = req.body;
   
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ userEmail: email });
     
     // check if user exists
     if (!user) {
@@ -224,7 +241,7 @@ export const checkUserEmailVerifiedController = async (
       walletAddress,
     } = req.query;
   
-    const user = await UserModel.findOne({ walletAddress: walletAddress });
+    const user = await UserModel.findOne({ walletAddress: walletAddress!.toString().toLowerCase() });
  
     if (!user) {
      return res
@@ -232,7 +249,7 @@ export const checkUserEmailVerifiedController = async (
        .json({ message: "invalid email" });
     }
 
-    if (!user.email || user.email == null) {
+    if (!user.userEmail || user.userEmail == null) {
       return res
         .status(401)
         .json({ message: "please verify your profile" });
@@ -245,7 +262,7 @@ export const checkUserEmailVerifiedController = async (
       user: {
         id: user._id,
         walletAddress: user.walletAddress,
-        email: user.email,
+        email: user.userEmail,
         emailStatus: user.emailOtp.verified
       },
 
@@ -257,7 +274,7 @@ export const checkUserEmailVerifiedController = async (
       user: {
         id: user._id,
         walletAddress: user.walletAddress,
-        email: user.email,
+        email: user.userEmail,
         emailStatus: user.emailOtp.verified
       },
 

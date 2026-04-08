@@ -4,7 +4,7 @@ export interface IUser extends Document {
   _id: ObjectId;
   walletAddress: string;
   name: string;
-  email: string;
+  userEmail: string;
   phoneNumber: string;
   emailOtp: {
     otp: string;
